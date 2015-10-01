@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Toe Weather</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="header_text">Today\'s weather</string>
+    <string name="success_btn">Success</string>
+</resources>
