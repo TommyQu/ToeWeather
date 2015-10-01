@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/header_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/location_text"
+        android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:id="@+id/temperature_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header_text"
+        android:layout_marginBottom="10dp"
+        android:text="@string/temperature_text"/>
+
+    <TextView
+        android:id="@+id/temperature_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header_text"
+        android:layout_toRightOf="@+id/temperature_text"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp" />
+
+    <TextView
+        android:id="@+id/description_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/temperature_text"
+        android:layout_marginBottom="30dp"
+        android:text="@string/description_text"/>
+
+    <TextView
+        android:id="@+id/description_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/temperature_text"
+        android:layout_toRightOf="@+id/description_text"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="10dp" />
+
+</RelativeLayout>

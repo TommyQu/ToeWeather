@@ -2,50 +2,50 @@ package com.toe.toeweather;
 
 import android.app.Activity;
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.toe.toeweather.utils.NetworkTask;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 
 public class MainActivity extends Activity {
 
     private final String TAG = "Toe";
+    private ListView mWeatherList;
     private TextView mLocationText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String serviceString = Context.LOCATION_SERVICE;
-        LocationManager locationManager = (LocationManager)getSystemService(serviceString);
-        String provider = locationManager.GPS_PROVIDER;
-        Location locationParam = locationManager.getLastKnownLocation(provider);
-        double longitude = locationParam.getLongitude();
-        double latitude = locationParam.getLatitude();
-        Log.d(TAG, String.valueOf(longitude));
-        Log.d(TAG, String.valueOf(latitude));
+        mLocationText = (TextView)findViewById(R.id.location_text);
 
-        NetworkTask networkTask = new NetworkTask();
-        try {
-            String totalInfo = networkTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/conditions/q/CA/San_Francisco.json").get();
-            JSONObject jsonObject = new JSONObject(totalInfo);
-            JSONObject currentObservationObject = new JSONObject(jsonObject.getString("current_observation"));
-            JSONObject displayLocationObject = new JSONObject(currentObservationObject.getString("display_location"));
-            String location = (displayLocationObject.getString("full"));
-            mLocationText = (TextView)findViewById(R.id.location_text);
-            mLocationText.setText(location);
-        } catch (Exception e) {
-            Log.d(TAG, e.toString());
-        }
+        mWeatherList = (ListView)findViewById(R.id.weather_list);
+
+        SimpleAdapter simpleAdapter = new SimpleAdapter(this, setData(), R.layout.weather_item,
+                new String[]{"headerText", "descriptionValue", "temperatureValue"}, new int[]{R.id.header_text, R.id.description_value, R.id.temperature_value});
+        mWeatherList.setAdapter(simpleAdapter);
+        getLocation();
     }
 
     @Override
@@ -69,4 +69,73 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    /**
+     * Get city and state name by longitude and latitude
+     */
+    public void getLocation() {
+        String serviceString = Context.LOCATION_SERVICE;
+        LocationManager locationManager = (LocationManager)getSystemService(serviceString);
+        String provider = locationManager.GPS_PROVIDER;
+        Location locationParam = locationManager.getLastKnownLocation(provider);
+        double longitude = locationParam.getLongitude();
+        double latitude = locationParam.getLatitude();
+        Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if(addresses.size() > 0) {
+                Log.d(TAG, addresses.get(0).getLocality());
+                Log.d(TAG, addresses.get(0).getCountryName());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, e.toString());
+        }
+    }
+
+    /**
+     * Get weather data from Wunderground API
+     */
+    public List<Map<String, Object>> setData() {
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        NetworkTask networkTask = new NetworkTask();
+        try {
+            String totalInfo = networkTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/VA/Arlington.json").get();
+            JSONObject jsonObject = new JSONObject(totalInfo);
+            JSONObject forecastObject = new JSONObject(jsonObject.getString("forecast"));
+            JSONObject simpleForecastObject = new JSONObject(forecastObject.getString("simpleforecast"));
+            JSONArray forecastDayArray = simpleForecastObject.getJSONArray("forecastday");
+            String headerText;
+            for(int i=0;i<3;i++) {
+                JSONObject dayObject = forecastDayArray.getJSONObject(i);
+                String descriptionValue = dayObject.getString("conditions");
+                JSONObject dateObject = dayObject.getJSONObject("date");
+                String weekday = dateObject.getString("weekday");
+                String monthname = dateObject.getString("monthname");
+                String day = dateObject.getString("day");
+                String year = dateObject.getString("year");
+
+                JSONObject highObject = dayObject.getJSONObject("high");
+                JSONObject lowObject = dayObject.getJSONObject("low");
+                String temperatureValue = "(F:"+lowObject.getString("fahrenheit")+"-"+highObject.getString("fahrenheit")+") "
+                                        +"(C:"+lowObject.getString("celsius")+"-"+highObject.getString("celsius")+")";
+
+                Map<String, Object> map = new HashMap<String, Object>();
+                if(i == 0)
+                    headerText = "Today's weather ("+monthname+" "+day+", "+year+")";
+                else
+                    headerText = weekday +" ("+monthname+" "+day+", "+year+")";
+                map.put("headerText", headerText);
+                map.put("descriptionValue", descriptionValue);
+                map.put("temperatureValue", temperatureValue);
+                list.add(map);
+            }
+            mLocationText.setText("VA");
+
+        } catch (Exception e) {
+            Log.d(TAG, e.toString());
+        }
+        return list;
+    }
+
 }

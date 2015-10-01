@@ -10,30 +10,21 @@
     <TextView
         android:id="@+id/location_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp" />
 
-    <TextView
-        android:id="@+id/header_text"
-        android:text="@string/header_text"
+    <ListView
+        android:id="@+id/weather_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/location_text"/>
-
-    <!--<com.beardedhen.androidbootstrap.BootstrapButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@id/header_text"-->
-        <!--android:layout_margin="10dp"-->
-        <!--android:text="@string/success_btn"-->
-        <!--bootstrap:bb_icon_right="fa-android"-->
-        <!--bootstrap:bb_type="success"-->
-        <!--/>-->
+        android:layout_below="@+id/location_text">
+    </ListView>
 
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/header_text"
+        android:layout_below="@+id/weather_list"
         android:progress="0"
         android:max="100" />
         <!--style="?android:attr/progressBarStyleHorizontal"-->

@@ -3,6 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="header_text">Today\'s weather</string>
     <string name="success_btn">Success</string>
+    <string name="temperature_text">Temperature:</string>
+    <string name="description_text">Description:</string>
 </resources>
