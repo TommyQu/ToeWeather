@@ -2,6 +2,7 @@ package com.toe.toeweather;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -66,6 +67,8 @@ public class MainActivity extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(settingsIntent);
             return true;
         }
 
@@ -107,7 +110,7 @@ public class MainActivity extends Activity {
 
             }
         };
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000, 100, locationListener);
 //        String provider = locationManager.GPS_PROVIDER;
 //        Location locationParam = locationManager.getLastKnownLocation(provider);
 //        double longitude = locationParam.getLongitude();

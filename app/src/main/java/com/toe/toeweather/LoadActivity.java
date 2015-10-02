@@ -25,9 +25,9 @@ public class LoadActivity extends Activity {
             @Override
             public void run() {
                 Intent mainIntent = new Intent(LoadActivity.this, MainActivity.class);
-                LoadActivity.this.startActivity(mainIntent);
-                LoadActivity.this.overridePendingTransition(R.anim.load_main_anim_in, R.anim.load_main_anim_out);
-                LoadActivity.this.finish();
+                startActivity(mainIntent);
+                overridePendingTransition(R.anim.load_main_anim_in, R.anim.load_main_anim_out);
+                finish();
             }
         }, LOAD_TIME);
     }

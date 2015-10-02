@@ -6,4 +6,8 @@
     <string name="success_btn">Success</string>
     <string name="temperature_text">Temperature:</string>
     <string name="description_text">Description:</string>
+    <string name="language_text">Language:</string>
+    <string name="display_days_text">Display days:</string>
+    <string name="submit_btn">Submit</string>
+    <string name="cancel_btn">Cancel</string>
 </resources>
