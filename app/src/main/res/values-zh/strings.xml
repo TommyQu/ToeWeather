@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">脚趾天气</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">设置</string>
+    <string name="success_btn">Success</string>
+    <string name="temperature_text">气温:</string>
+    <string name="description_text">描述:</string>
+</resources>

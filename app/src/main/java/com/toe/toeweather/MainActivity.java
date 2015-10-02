@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
 
             }
         };
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000, 100, locationListener);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 0, 0, locationListener);
 //        String provider = locationManager.GPS_PROVIDER;
 //        Location locationParam = locationManager.getLastKnownLocation(provider);
 //        double longitude = locationParam.getLongitude();
