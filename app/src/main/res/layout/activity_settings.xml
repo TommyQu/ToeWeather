@@ -41,11 +41,46 @@
         android:layout_marginLeft="5dp"
         android:entries="@array/days_string"/>
 
+    <TextView
+        android:id="@+id/zip_code_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/display_days_text"
+        android:layout_marginTop="30dp"
+        android:text="@string/zip_code_text"/>
+
+    <EditText
+        android:id="@+id/zip_code_value"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/display_days_text"
+        android:layout_toRightOf="@+id/zip_code_text"
+        android:layout_marginTop="18dp"
+        android:layout_marginLeft="30dp" />
+
+    <TextView
+        android:id="@+id/degree_type_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/zip_code_text"
+        android:layout_marginTop="30dp"
+        android:text="@string/degree_type_text"/>
+
+    <Spinner
+        android:id="@+id/degree_type_spinner"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/zip_code_text"
+        android:layout_toRightOf="@+id/degree_type_text"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="20dp"
+        android:entries="@array/degree_type_string"/>
+
     <com.beardedhen.androidbootstrap.BootstrapButton
         android:id="@+id/submit_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/display_days_text"
+        android:layout_below="@+id/degree_type_text"
         android:layout_marginTop="40dp"
         android:layout_marginLeft="80dp"
         android:text="@string/submit_btn"
@@ -57,7 +92,7 @@
         android:id="@+id/cancel_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/display_days_text"
+        android:layout_below="@+id/degree_type_text"
         android:layout_toRightOf="@+id/submit_btn"
         android:layout_marginTop="40dp"
         android:layout_marginLeft="20dp"

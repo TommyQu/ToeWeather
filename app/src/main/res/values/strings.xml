@@ -10,4 +10,6 @@
     <string name="display_days_text">Display days:</string>
     <string name="submit_btn">Submit</string>
     <string name="cancel_btn">Cancel</string>
+    <string name="zip_code_text">Zip code:</string>
+    <string name="degree_type_text">Degree type:</string>
 </resources>

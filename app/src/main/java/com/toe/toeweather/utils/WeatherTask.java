@@ -34,6 +34,8 @@ public class WeatherTask extends AsyncTask<String, String, WeatherData> {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences("WeatherPreference", Context.MODE_PRIVATE);
         String language = sharedPreferences.getString("language", "No language!");
         Integer displayDays = sharedPreferences.getInt("displayDays", 0);
+        String zipCode = sharedPreferences.getString("zipCode", "null");
+        String degreeType = sharedPreferences.getString("degreeType", "Fahrenheit");
 
         WeatherData weatherData = new WeatherData();
         try {
@@ -69,10 +71,11 @@ public class WeatherTask extends AsyncTask<String, String, WeatherData> {
 
                 JSONObject highObject = dayObject.getJSONObject("high");
                 JSONObject lowObject = dayObject.getJSONObject("low");
-                String temperatureValue = "(F:"+lowObject.getString("fahrenheit")+"-"+highObject.getString("fahrenheit")+") "
-                        +"(C:"+lowObject.getString("celsius")+"-"+highObject.getString("celsius")+")";
-
-//                Map<String, Object> map = new HashMap<String, Object>();
+                String temperatureValue;
+                if(degreeType.equals("Fahrenheit") || degreeType.equals("华氏度"))
+                    temperatureValue = "(°F:"+lowObject.getString("fahrenheit")+"-"+highObject.getString("fahrenheit")+") ";
+                else
+                    temperatureValue = "(°C:"+lowObject.getString("celsius")+"-"+highObject.getString("celsius")+")";
                 if(i == 0)
                     headerText = "Today's weather ("+monthname+" "+day+", "+year+")";
                 else
