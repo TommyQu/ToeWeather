@@ -1,4 +1,4 @@
-package com.toe.toeweather;
+package com.toe.toeweather.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
+
+import com.toe.toeweather.R;
 
 /**
  * Created by kukentaira on 10/2/15.

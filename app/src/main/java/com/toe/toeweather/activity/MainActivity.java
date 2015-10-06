@@ -1,4 +1,4 @@
-package com.toe.toeweather;
+package com.toe.toeweather.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,12 +14,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.toe.toeweather.utils.NetworkTask;
+import com.toe.toeweather.R;
+import com.toe.toeweather.model.WeatherData;
 import com.toe.toeweather.utils.WeatherListAdapter;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.toe.toeweather.utils.WeatherTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,10 +30,9 @@ import java.util.Map;
 
 public class MainActivity extends Activity {
 
-    private final String TAG = "Toe";
+    private final String TAG = "ToeMainActivity";
     private ListView mWeatherList;
     private TextView mLocationText;
-//    private ImageView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +48,7 @@ public class MainActivity extends Activity {
                 new String[]{"headerText", "descriptionValue", "temperatureValue", "weatherImg"}, new int[]{R.id.header_text, R.id.description_value, R.id.temperature_value, R.id.weather_img});
         mWeatherList.setAdapter(mWeatherListAdapter);
         getLocation();
+
     }
 
     @Override
@@ -91,7 +91,8 @@ public class MainActivity extends Activity {
                         Log.d(TAG, addresses.get(0).getCountryName());
                     }
                 } catch (Exception e) {
-                    Log.d(TAG, e.toString());
+                    Toast.makeText(MainActivity.this, "Unable to load GPS", Toast.LENGTH_LONG);
+                    Log.d(TAG, "getLocation:"+e.toString());
                 }
             }
 
@@ -123,43 +124,20 @@ public class MainActivity extends Activity {
     public List<Map<String, Object>> setData() {
 
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        NetworkTask networkTask = new NetworkTask();
+        WeatherTask weatherTask = new WeatherTask(MainActivity.this);
         try {
-            String totalInfo = networkTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/VA/Arlington.json").get();
-            JSONObject jsonObject = new JSONObject(totalInfo);
-            JSONObject forecastObject = new JSONObject(jsonObject.getString("forecast"));
-            JSONObject simpleForecastObject = new JSONObject(forecastObject.getString("simpleforecast"));
-            JSONArray forecastDayArray = simpleForecastObject.getJSONArray("forecastday");
-            String headerText;
-            for(int i=0;i<3;i++) {
-                JSONObject dayObject = forecastDayArray.getJSONObject(i);
-                String descriptionValue = dayObject.getString("conditions");
-                String iconUrl = dayObject.getString("icon_url");
-                JSONObject dateObject = dayObject.getJSONObject("date");
-                String weekday = dateObject.getString("weekday");
-                String monthname = dateObject.getString("monthname");
-                String day = dateObject.getString("day");
-                String year = dateObject.getString("year");
-
-                JSONObject highObject = dayObject.getJSONObject("high");
-                JSONObject lowObject = dayObject.getJSONObject("low");
-                String temperatureValue = "(F:"+lowObject.getString("fahrenheit")+"-"+highObject.getString("fahrenheit")+") "
-                                        +"(C:"+lowObject.getString("celsius")+"-"+highObject.getString("celsius")+")";
-
+            WeatherData weatherData = weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/VA/Arlington.json").get();
+            for(int i=0;i<weatherData.getListWeatherItem().size();i++) {
                 Map<String, Object> map = new HashMap<String, Object>();
-                if(i == 0)
-                    headerText = "Today's weather ("+monthname+" "+day+", "+year+")";
-                else
-                    headerText = weekday +" ("+monthname+" "+day+", "+year+")";
-                map.put("headerText", headerText);
-                map.put("descriptionValue", descriptionValue);
-                map.put("temperatureValue", temperatureValue);
-                map.put("weatherImg", iconUrl);
+                map.put("headerText", weatherData.getListWeatherItem().get(i).getHeaderText());
+                map.put("descriptionValue", weatherData.getListWeatherItem().get(i).getDescriptionValue());
+                map.put("temperatureValue", weatherData.getListWeatherItem().get(i).getTemperatureValue());
+                map.put("weatherImg", weatherData.getListWeatherItem().get(i).getImgUrl());
                 list.add(map);
             }
             mLocationText.setText("VA");
-
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Log.d(TAG, e.toString());
         }
         return list;
