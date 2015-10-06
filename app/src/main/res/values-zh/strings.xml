@@ -1,9 +1,13 @@
 <resources>
-    <string name="app_name">脚趾天气</string>
+    <string name="app_name">Toe Weather</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">设置</string>
-    <string name="success_btn">Success</string>
-    <string name="temperature_text">气温:</string>
+    <string name="success_btn">成功</string>
+    <string name="temperature_text">温度:</string>
     <string name="description_text">描述:</string>
+    <string name="language_text">语言:</string>
+    <string name="display_days_text">显示天数:</string>
+    <string name="submit_btn">确认</string>
+    <string name="cancel_btn">取消</string>
 </resources>
