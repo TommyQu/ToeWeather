@@ -1,30 +1,24 @@
 package com.toe.toeweather.activity;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.toe.toeweather.R;
 import com.toe.toeweather.model.WeatherData;
 import com.toe.toeweather.utils.WeatherListAdapter;
+import com.toe.toeweather.utils.WeatherLocation;
 import com.toe.toeweather.utils.WeatherTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 
@@ -33,6 +27,7 @@ public class MainActivity extends Activity {
     private final String TAG = "ToeMainActivity";
     private ListView mWeatherList;
     private TextView mLocationText;
+    public ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +39,31 @@ public class MainActivity extends Activity {
 
         mWeatherList = (ListView)findViewById(R.id.weather_list);
 
+//        pd = new ProgressDialog(MainActivity.this);
+//        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//        pd.setTitle("Alert");
+//        pd.setMessage("Loading...");
+//        pd.setIcon(R.drawable.myphoto);
+//        pd.setIndeterminate(false);
+//        pd.setCancelable(true);
+//        pd.show();
+//        pd.setButton("确定", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int i) {
+//                dialog.cancel();
+//            }
+//        });
+
         WeatherListAdapter mWeatherListAdapter = new WeatherListAdapter(this, setData(), R.layout.weather_item,
                 new String[]{"headerText", "descriptionValue", "temperatureValue", "weatherImg"}, new int[]{R.id.header_text, R.id.description_value, R.id.temperature_value, R.id.weather_img});
         mWeatherList.setAdapter(mWeatherListAdapter);
-        getLocation();
+        WeatherLocation weatherLocation = new WeatherLocation(MainActivity.this);
+        weatherLocation.getLocation();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -73,49 +88,6 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Get city and state name by longitude and latitude
-     */
-    public void getLocation() {
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
-                try {
-                    List<Address> addresses = geocoder.getFromLocation(location.getLongitude(), location.getLatitude(), 1);
-                    if(addresses.size() > 0) {
-                        Log.d(TAG, addresses.get(0).getLocality());
-                        Log.d(TAG, addresses.get(0).getCountryName());
-                    }
-                } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, "Unable to load GPS", Toast.LENGTH_LONG);
-                    Log.d(TAG, "getLocation:"+e.toString());
-                }
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000, 100, locationListener);
-//        String provider = locationManager.GPS_PROVIDER;
-//        Location locationParam = locationManager.getLastKnownLocation(provider);
-//        double longitude = locationParam.getLongitude();
-//        double latitude = locationParam.getLatitude();
     }
 
     /**

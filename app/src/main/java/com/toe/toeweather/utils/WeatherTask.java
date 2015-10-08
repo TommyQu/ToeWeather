@@ -25,6 +25,7 @@ public class WeatherTask extends AsyncTask<String, String, WeatherData> {
     private static final String TAG = "ToeWeatherTask";
     private Context mContext;
 
+
     public WeatherTask(Context context) {
         mContext = context;
     }
@@ -95,7 +96,18 @@ public class WeatherTask extends AsyncTask<String, String, WeatherData> {
     }
 
     @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+    @Override
     protected void onPostExecute(WeatherData weatherData) {
         super.onPostExecute(weatherData);
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        mMainActivity.pd.dismiss();
     }
 }

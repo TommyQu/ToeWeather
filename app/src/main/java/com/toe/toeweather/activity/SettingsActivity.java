@@ -43,7 +43,7 @@ public class SettingsActivity extends Activity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("WeatherPreference", Context.MODE_PRIVATE);
         String currentLanguage = sharedPreferences.getString("language", "No language!");
-        Integer currentDisplayDays = sharedPreferences.getInt("displayDays", 0);
+        Integer currentDisplayDays = sharedPreferences.getInt("displayDays", 3);
         String currentZipCode = sharedPreferences.getString("zipCode", "null");
         String currentDegreeType = sharedPreferences.getString("degreeType", "Fahrenheit");
         if(currentLanguage.equals("English") || currentLanguage.equals("英语"))

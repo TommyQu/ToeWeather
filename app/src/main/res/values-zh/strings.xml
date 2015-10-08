@@ -10,4 +10,6 @@
     <string name="display_days_text">显示天数:</string>
     <string name="submit_btn">确认</string>
     <string name="cancel_btn">取消</string>
+    <string name="zip_code_text">邮编:</string>
+    <string name="degree_type_text">温度类型:</string>
 </resources>
