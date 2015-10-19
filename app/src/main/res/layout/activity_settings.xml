@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrap="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -76,7 +75,7 @@
         android:layout_marginTop="20dp"
         android:entries="@array/degree_type_string"/>
 
-    <com.beardedhen.androidbootstrap.BootstrapButton
+    <Button
         android:id="@+id/submit_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -84,11 +83,9 @@
         android:layout_marginTop="40dp"
         android:layout_marginLeft="80dp"
         android:text="@string/submit_btn"
-        bootstrap:bb_type="success"
-        bootstrap:bb_size="small"
         />
 
-    <com.beardedhen.androidbootstrap.BootstrapButton
+    <Button
         android:id="@+id/cancel_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -97,8 +94,6 @@
         android:layout_marginTop="40dp"
         android:layout_marginLeft="20dp"
         android:text="@string/cancel_btn"
-        bootstrap:bb_type="danger"
-        bootstrap:bb_size="small"
         />
 
 </RelativeLayout>

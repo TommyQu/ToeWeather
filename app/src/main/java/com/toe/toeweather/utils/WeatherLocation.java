@@ -8,7 +8,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.List;
 import java.util.Locale;
@@ -21,9 +20,16 @@ public class WeatherLocation {
     private final String TAG = "ToeWeatherLocation";
 
     private Context mContext;
+    private WeatherLocationListener mWeatherLocationListener;
 
-    public WeatherLocation(Context context) {
+    public interface WeatherLocationListener {
+        public void getWeatherLocationSuccess(Address address);
+        public void getWeatherLocationFail();
+    }
+
+    public WeatherLocation(Context context, WeatherLocationListener weatherLocationListener) {
         mContext = context;
+        mWeatherLocationListener = weatherLocationListener;
     }
 
     /**
@@ -37,13 +43,17 @@ public class WeatherLocation {
                 Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
                 try {
                     List<Address> addresses = geocoder.getFromLocation(location.getLongitude(), location.getLatitude(), 1);
-                    if(addresses.size() > 0) {
-                        Log.d(TAG, addresses.get(0).getLocality());
-                        Log.d(TAG, addresses.get(0).getCountryName());
+                    if (addresses.size() > 0) {
+//                        Log.d(TAG, addresses.get(0).getLocality());
+//                        Log.d(TAG, addresses.get(0).getCountryName());
+                        mWeatherLocationListener.getWeatherLocationSuccess(addresses.get(0));
+                    }
+                    else {
+                        mWeatherLocationListener.getWeatherLocationFail();
                     }
                 } catch (Exception e) {
-                    Toast.makeText(mContext, "Unable to load GPS", Toast.LENGTH_LONG);
-                    Log.d(TAG, "getLocation:"+e.toString());
+                    Log.d(TAG, "getLocation:" + e.getMessage().toString());
+                    mWeatherLocationListener.getWeatherLocationFail();
                 }
             }
 
@@ -62,7 +72,7 @@ public class WeatherLocation {
 
             }
         };
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000, 100, locationListener);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000, 10, locationListener);
 //        String provider = locationManager.GPS_PROVIDER;
 //        Location locationParam = locationManager.getLastKnownLocation(provider);
 //        double longitude = locationParam.getLongitude();

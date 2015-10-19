@@ -9,11 +9,11 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.toe.toeweather.R;
 
 import java.util.Locale;
@@ -24,8 +24,8 @@ import java.util.Locale;
 public class SettingsActivity extends Activity {
 
     private static final String TAG = "ToeSettings";
-    private BootstrapButton submitBtn;
-    private BootstrapButton cancelBtn;
+    private Button submitBtn;
+    private Button cancelBtn;
     private Spinner languageSpinner;
     private Spinner displayDaysSpinner;
     private EditText zipCodeValue;
@@ -42,7 +42,7 @@ public class SettingsActivity extends Activity {
         degreeTypeSpinner = (Spinner)findViewById(R.id.degree_type_spinner);
 
         SharedPreferences sharedPreferences = getSharedPreferences("WeatherPreference", Context.MODE_PRIVATE);
-        String currentLanguage = sharedPreferences.getString("language", "No language!");
+        String currentLanguage = sharedPreferences.getString("language", "English");
         Integer currentDisplayDays = sharedPreferences.getInt("displayDays", 3);
         String currentZipCode = sharedPreferences.getString("zipCode", "null");
         String currentDegreeType = sharedPreferences.getString("degreeType", "Fahrenheit");
@@ -58,7 +58,7 @@ public class SettingsActivity extends Activity {
             degreeTypeSpinner.setSelection(1);
 
 
-        submitBtn = (BootstrapButton)findViewById(R.id.submit_btn);
+        submitBtn = (Button)findViewById(R.id.submit_btn);
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,7 +97,7 @@ public class SettingsActivity extends Activity {
             }
         });
 
-        cancelBtn = (BootstrapButton)findViewById(R.id.cancel_btn);
+        cancelBtn = (Button)findViewById(R.id.cancel_btn);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

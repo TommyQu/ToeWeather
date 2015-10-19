@@ -3,12 +3,14 @@ package com.toe.toeweather.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Address;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.toe.toeweather.R;
 import com.toe.toeweather.model.WeatherData;
@@ -22,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements WeatherTask.WeatherTaskListener, WeatherLocation.WeatherLocationListener{
 
     private final String TAG = "ToeMainActivity";
     private ListView mWeatherList;
@@ -39,26 +41,11 @@ public class MainActivity extends Activity {
 
         mWeatherList = (ListView)findViewById(R.id.weather_list);
 
-//        pd = new ProgressDialog(MainActivity.this);
-//        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//        pd.setTitle("Alert");
-//        pd.setMessage("Loading...");
-//        pd.setIcon(R.drawable.myphoto);
-//        pd.setIndeterminate(false);
-//        pd.setCancelable(true);
-//        pd.show();
-//        pd.setButton("确定", new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int i) {
-//                dialog.cancel();
-//            }
-//        });
-
-        WeatherListAdapter mWeatherListAdapter = new WeatherListAdapter(this, setData(), R.layout.weather_item,
-                new String[]{"headerText", "descriptionValue", "temperatureValue", "weatherImg"}, new int[]{R.id.header_text, R.id.description_value, R.id.temperature_value, R.id.weather_img});
-        mWeatherList.setAdapter(mWeatherListAdapter);
-        WeatherLocation weatherLocation = new WeatherLocation(MainActivity.this);
+        WeatherTask weatherTask = new WeatherTask(MainActivity.this, MainActivity.this);
+        weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/VA/Arlington.json");
+        WeatherLocation weatherLocation = new WeatherLocation(MainActivity.this, MainActivity.this);
         weatherLocation.getLocation();
-
+        pd = ProgressDialog.show(this, "Loading", "Loading weather data...");
     }
 
     @Override
@@ -90,29 +77,40 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Get weather data from Wunderground API
-     */
-    public List<Map<String, Object>> setData() {
-
+    @Override
+    public void getWeatherDataSuccess(WeatherData weatherData) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        WeatherTask weatherTask = new WeatherTask(MainActivity.this);
-        try {
-            WeatherData weatherData = weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/VA/Arlington.json").get();
-            for(int i=0;i<weatherData.getListWeatherItem().size();i++) {
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("headerText", weatherData.getListWeatherItem().get(i).getHeaderText());
-                map.put("descriptionValue", weatherData.getListWeatherItem().get(i).getDescriptionValue());
-                map.put("temperatureValue", weatherData.getListWeatherItem().get(i).getTemperatureValue());
-                map.put("weatherImg", weatherData.getListWeatherItem().get(i).getImgUrl());
-                list.add(map);
-            }
-            mLocationText.setText("VA");
+        for(int i=0;i<weatherData.getListWeatherItem().size();i++) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("headerText", weatherData.getListWeatherItem().get(i).getHeaderText());
+            map.put("descriptionValue", weatherData.getListWeatherItem().get(i).getDescriptionValue());
+            map.put("temperatureValue", weatherData.getListWeatherItem().get(i).getTemperatureValue());
+            map.put("weatherImg", weatherData.getListWeatherItem().get(i).getImgUrl());
+            list.add(map);
         }
-        catch (Exception e) {
-            Log.d(TAG, e.toString());
-        }
-        return list;
+        mLocationText.setText("VA");
+        WeatherListAdapter mWeatherListAdapter = new WeatherListAdapter(this, list, R.layout.weather_item,
+                new String[]{"headerText", "descriptionValue", "temperatureValue", "weatherImg"}, new int[]{R.id.header_text, R.id.description_value, R.id.temperature_value, R.id.weather_img});
+        mWeatherList.setAdapter(mWeatherListAdapter);
+        pd.dismiss();
+        Toast.makeText(MainActivity.this, "Load weather data successfully!", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void getWeatherDataFail() {
+        pd.dismiss();
+        Toast.makeText(MainActivity.this, "Fail to load weather data!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void getWeatherLocationSuccess(Address address) {
+        Log.d(TAG, address.getLocality());
+        Toast.makeText(MainActivity.this, "Load GPS location successfully!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void getWeatherLocationFail() {
+        Log.d(TAG, "Location fail");
+        Toast.makeText(MainActivity.this, "Fail to load GPS location!", Toast.LENGTH_SHORT).show();
+    }
 }

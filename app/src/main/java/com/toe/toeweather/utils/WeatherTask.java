@@ -24,17 +24,26 @@ public class WeatherTask extends AsyncTask<String, String, WeatherData> {
 
     private static final String TAG = "ToeWeatherTask";
     private Context mContext;
+    private WeatherTaskListener mWeatherTaskListener;
 
-
-    public WeatherTask(Context context) {
+    public WeatherTask(Context context, WeatherTaskListener weatherTaskListener) {
         mContext = context;
+        mWeatherTaskListener = weatherTaskListener;
     }
 
+    public interface WeatherTaskListener {
+        public void getWeatherDataSuccess(WeatherData weatherData);
+        public void getWeatherDataFail();
+    }
+
+    /**
+     * Get weather data from Wunderground API
+     */
     @Override
     protected WeatherData doInBackground(String... params) {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences("WeatherPreference", Context.MODE_PRIVATE);
-        String language = sharedPreferences.getString("language", "No language!");
-        Integer displayDays = sharedPreferences.getInt("displayDays", 0);
+        String language = sharedPreferences.getString("language", "English");
+        Integer displayDays = sharedPreferences.getInt("displayDays", 3);
         String zipCode = sharedPreferences.getString("zipCode", "null");
         String degreeType = sharedPreferences.getString("degreeType", "Fahrenheit");
 
@@ -96,13 +105,18 @@ public class WeatherTask extends AsyncTask<String, String, WeatherData> {
     }
 
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
-    @Override
     protected void onPostExecute(WeatherData weatherData) {
         super.onPostExecute(weatherData);
+        if(mWeatherTaskListener != null) {
+            if(weatherData.getListWeatherItem().size() > 0) {
+                mWeatherTaskListener.getWeatherDataSuccess(weatherData);
+            }
+            else {
+                mWeatherTaskListener.getWeatherDataFail();
+            }
+        }
+//        WeatherLocation weatherLocation = new WeatherLocation(mContext);
+//        weatherLocation.getLocation();
 //        try {
 //            Thread.sleep(3000);
 //        } catch (InterruptedException e) {
