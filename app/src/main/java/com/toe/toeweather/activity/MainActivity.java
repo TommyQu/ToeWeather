@@ -3,7 +3,6 @@ package com.toe.toeweather.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.location.Address;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -44,7 +43,7 @@ public class MainActivity extends Activity implements WeatherTask.WeatherTaskLis
         WeatherTask weatherTask = new WeatherTask(MainActivity.this, MainActivity.this);
         weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/VA/Arlington.json");
         WeatherLocation weatherLocation = new WeatherLocation(MainActivity.this, MainActivity.this);
-        weatherLocation.getLocation();
+        weatherLocation.execute("http://api.wunderground.com/api/b00e06c861ae9642/geolookup/q/37.776289,-122.395234.json");
         pd = ProgressDialog.show(this, "Loading", "Loading weather data...");
     }
 
@@ -103,14 +102,15 @@ public class MainActivity extends Activity implements WeatherTask.WeatherTaskLis
     }
 
     @Override
-    public void getWeatherLocationSuccess(Address address) {
-        Log.d(TAG, address.getLocality());
+    public void getWeatherLocationSuccess(String s) {
+        Log.d(TAG, s);
         Toast.makeText(MainActivity.this, "Load GPS location successfully!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void getWeatherLocationFail() {
-        Log.d(TAG, "Location fail");
+        Log.d(TAG, "Location fail!");
         Toast.makeText(MainActivity.this, "Fail to load GPS location!", Toast.LENGTH_SHORT).show();
     }
+
 }
