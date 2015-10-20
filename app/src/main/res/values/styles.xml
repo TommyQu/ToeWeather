@@ -3,6 +3,31 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light">
         <!-- Customize your theme here. -->
+        <item name="android:actionBarStyle">@style/ToeWeatherActionBar</item>
+        <item name="android:spinnerDropDownItemStyle">@style/ToeWeatherSpinnerItem</item>
+    </style>
+    <style name="ToeWeatherActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@color/blue</item>
+        <item name="android:titleTextStyle">@style/ToeWeatherTitleTextStyle</item>
+    </style>
+    <style name="ToeWeatherTitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="ToeWeatherSpinnerItem" parent="@android:style/Widget.Holo.Light.DropDownItem.Spinner">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@color/blue</item>
     </style>
 
+
+    <style name="LargeText">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">28sp</item>
+    </style>
+    <style name="MediumText">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="SmallText">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
 </resources>

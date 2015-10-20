@@ -6,7 +6,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -26,6 +25,7 @@ public class WeatherLocation extends AsyncTask<String, Integer, String> implemen
     private Context mContext;
     private WeatherLocationListener mWeatherLocationListener;
     private LocationManager mLocationManager;
+    private Location mLocation;
 
     public interface WeatherLocationListener {
         public void getWeatherLocationSuccess(String locationInfo);
@@ -38,11 +38,18 @@ public class WeatherLocation extends AsyncTask<String, Integer, String> implemen
     }
 
     @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 100, this);
+        mLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+    }
+
+    @Override
     protected String doInBackground(String... params) {
-        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         String locationInfo = null;
         try {
-            URL url = new URL(params[0]);
+            URL url = new URL(params[0]+mLocation.getLatitude()+","+mLocation.getLongitude()+".json");
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
             httpURLConnection.setDoInput(true);
             httpURLConnection.setDoOutput(true);
@@ -62,17 +69,17 @@ public class WeatherLocation extends AsyncTask<String, Integer, String> implemen
             locationInfo = locationObject.getString("state")+"/"+locationObject.getString("city");
         }
         catch (Exception e) {
-            Log.d(TAG, e.getMessage().toString());
+//            Log.d(TAG, e.getMessage().toString());
         }
         return locationInfo;
     }
 
     @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
+    protected void onPostExecute(String locationInfo) {
+        super.onPostExecute(locationInfo);
         if(mWeatherLocationListener != null) {
-            if(s != null) {
-                mWeatherLocationListener.getWeatherLocationSuccess(s);
+            if(locationInfo != null) {
+                mWeatherLocationListener.getWeatherLocationSuccess(locationInfo);
             }
             else {
                 mWeatherLocationListener.getWeatherLocationFail();
@@ -82,6 +89,7 @@ public class WeatherLocation extends AsyncTask<String, Integer, String> implemen
 
     @Override
     public void onLocationChanged(Location location) {
+        mLocation = location;
     }
 
     @Override

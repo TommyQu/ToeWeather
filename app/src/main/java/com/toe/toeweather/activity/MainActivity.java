@@ -2,7 +2,11 @@ package com.toe.toeweather.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -35,16 +39,16 @@ public class MainActivity extends Activity implements WeatherTask.WeatherTaskLis
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getActionBar().setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#550000ff")));
 
         mLocationText = (TextView)findViewById(R.id.location_text);
 
         mWeatherList = (ListView)findViewById(R.id.weather_list);
 
-        WeatherTask weatherTask = new WeatherTask(MainActivity.this, MainActivity.this);
-        weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/VA/Arlington.json");
-        WeatherLocation weatherLocation = new WeatherLocation(MainActivity.this, MainActivity.this);
-        weatherLocation.execute("http://api.wunderground.com/api/b00e06c861ae9642/geolookup/q/37.776289,-122.395234.json");
         pd = ProgressDialog.show(this, "Loading", "Loading weather data...");
+        pd.setCancelable(true);
+        WeatherLocation weatherLocation = new WeatherLocation(MainActivity.this, MainActivity.this);
+        weatherLocation.execute("http://api.wunderground.com/api/b00e06c861ae9642/geolookup/q/");
     }
 
     @Override
@@ -77,6 +81,30 @@ public class MainActivity extends Activity implements WeatherTask.WeatherTaskLis
     }
 
     @Override
+    public void getWeatherLocationSuccess(String locationInfo) {
+        Log.d(TAG, locationInfo);
+        Toast.makeText(MainActivity.this, "Load GPS location successfully!", Toast.LENGTH_SHORT).show();
+        WeatherTask weatherTask = new WeatherTask(MainActivity.this, MainActivity.this);
+        weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/"+locationInfo+".json");
+        mLocationText.setText(locationInfo);
+    }
+
+    @Override
+    public void getWeatherLocationFail() {
+        Log.d(TAG, "Location fail! ");
+        Toast.makeText(MainActivity.this, "Fail to load GPS location! Load data from zip code.", Toast.LENGTH_SHORT).show();
+        SharedPreferences sharedPreferences = MainActivity.this.getSharedPreferences("WeatherPreference", Context.MODE_PRIVATE);
+        String zipCode = sharedPreferences.getString("zipCode", "null");
+        if(zipCode.equals(null)) {
+            Toast.makeText(MainActivity.this, "No zip code found!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            WeatherTask weatherTask = new WeatherTask(MainActivity.this, MainActivity.this);
+            weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/geolookup/q/"+zipCode+".json");
+        }
+    }
+
+    @Override
     public void getWeatherDataSuccess(WeatherData weatherData) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         for(int i=0;i<weatherData.getListWeatherItem().size();i++) {
@@ -87,7 +115,6 @@ public class MainActivity extends Activity implements WeatherTask.WeatherTaskLis
             map.put("weatherImg", weatherData.getListWeatherItem().get(i).getImgUrl());
             list.add(map);
         }
-        mLocationText.setText("VA");
         WeatherListAdapter mWeatherListAdapter = new WeatherListAdapter(this, list, R.layout.weather_item,
                 new String[]{"headerText", "descriptionValue", "temperatureValue", "weatherImg"}, new int[]{R.id.header_text, R.id.description_value, R.id.temperature_value, R.id.weather_img});
         mWeatherList.setAdapter(mWeatherListAdapter);
@@ -99,18 +126,6 @@ public class MainActivity extends Activity implements WeatherTask.WeatherTaskLis
     public void getWeatherDataFail() {
         pd.dismiss();
         Toast.makeText(MainActivity.this, "Fail to load weather data!", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void getWeatherLocationSuccess(String s) {
-        Log.d(TAG, s);
-        Toast.makeText(MainActivity.this, "Load GPS location successfully!", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void getWeatherLocationFail() {
-        Log.d(TAG, "Location fail!");
-        Toast.makeText(MainActivity.this, "Fail to load GPS location!", Toast.LENGTH_SHORT).show();
     }
 
 }
