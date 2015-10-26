@@ -18,7 +18,7 @@ import java.net.URL;
 /**
  * Created by TommyQu on 10/7/15.
  */
-public class WeatherLocation extends AsyncTask<String, Integer, String> implements LocationListener{
+public class WeatherLocationTask extends AsyncTask<String, Integer, String> implements LocationListener{
 
     private final String TAG = "ToeWeatherLocation";
 
@@ -32,7 +32,7 @@ public class WeatherLocation extends AsyncTask<String, Integer, String> implemen
         public void getWeatherLocationFail();
     }
 
-    public WeatherLocation(Context context, WeatherLocationListener weatherLocationListener) {
+    public WeatherLocationTask(Context context, WeatherLocationListener weatherLocationListener) {
         mContext = context;
         mWeatherLocationListener = weatherLocationListener;
     }
@@ -78,7 +78,7 @@ public class WeatherLocation extends AsyncTask<String, Integer, String> implemen
     protected void onPostExecute(String locationInfo) {
         super.onPostExecute(locationInfo);
         if(mWeatherLocationListener != null) {
-            if(locationInfo != null) {
+            if(locationInfo != null && locationInfo.length() > 0) {
                 mWeatherLocationListener.getWeatherLocationSuccess(locationInfo);
             }
             else {

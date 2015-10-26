@@ -9,8 +9,10 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
@@ -40,6 +42,7 @@ public class SettingsActivity extends Activity {
         displayDaysSpinner = (Spinner)findViewById(R.id.display_days_spinner);
         zipCodeValue = (EditText)findViewById(R.id.zip_code_value);
         degreeTypeSpinner = (Spinner)findViewById(R.id.degree_type_spinner);
+        setSpinnerStyle();
 
         SharedPreferences sharedPreferences = getSharedPreferences("WeatherPreference", Context.MODE_PRIVATE);
         String currentLanguage = sharedPreferences.getString("language", "English");
@@ -104,6 +107,46 @@ public class SettingsActivity extends Activity {
                 finish();
             }
         });
+    }
+
+    private void setSpinnerStyle() {
+        languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                Object item = (String) parent.getItemAtPosition(position);
+                ((TextView) parent.getChildAt(0)).setTextColor(getResources().getColor(R.color.white));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        displayDaysSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) parent.getChildAt(0)).setTextColor(getResources().getColor(R.color.white));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        degreeTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) parent.getChildAt(0)).setTextColor(getResources().getColor(R.color.white));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
     }
 
 }

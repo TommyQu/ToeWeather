@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -18,8 +17,9 @@ import android.widget.Toast;
 import com.toe.toeweather.R;
 import com.toe.toeweather.model.WeatherData;
 import com.toe.toeweather.utils.WeatherListAdapter;
-import com.toe.toeweather.utils.WeatherLocation;
+import com.toe.toeweather.utils.WeatherLocationTask;
 import com.toe.toeweather.utils.WeatherTask;
+import com.toe.toeweather.utils.ZipCodeLocationTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class MainActivity extends Activity implements WeatherTask.WeatherTaskListener, WeatherLocation.WeatherLocationListener{
+public class MainActivity extends Activity implements WeatherTask.WeatherTaskListener, WeatherLocationTask.WeatherLocationListener, ZipCodeLocationTask.ZipCodeLocationTaskListener{
 
     private final String TAG = "ToeMainActivity";
     private ListView mWeatherList;
@@ -47,8 +47,8 @@ public class MainActivity extends Activity implements WeatherTask.WeatherTaskLis
 
         pd = ProgressDialog.show(this, "Loading", "Loading weather data...");
         pd.setCancelable(true);
-        WeatherLocation weatherLocation = new WeatherLocation(MainActivity.this, MainActivity.this);
-        weatherLocation.execute("http://api.wunderground.com/api/b00e06c861ae9642/geolookup/q/");
+        WeatherLocationTask weatherLocationTask = new WeatherLocationTask(MainActivity.this, MainActivity.this);
+        weatherLocationTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/geolookup/q/");
     }
 
     @Override
@@ -82,16 +82,15 @@ public class MainActivity extends Activity implements WeatherTask.WeatherTaskLis
 
     @Override
     public void getWeatherLocationSuccess(String locationInfo) {
-        Log.d(TAG, locationInfo);
         Toast.makeText(MainActivity.this, "Load GPS location successfully!", Toast.LENGTH_SHORT).show();
         WeatherTask weatherTask = new WeatherTask(MainActivity.this, MainActivity.this);
-        weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/"+locationInfo+".json");
+        weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/"+locationInfo+".json", "gpsSuccess");
         mLocationText.setText(locationInfo);
     }
 
     @Override
     public void getWeatherLocationFail() {
-        Log.d(TAG, "Location fail! ");
+//        Log.d(TAG, "Location fail! ");
         Toast.makeText(MainActivity.this, "Fail to load GPS location! Load data from zip code.", Toast.LENGTH_SHORT).show();
         SharedPreferences sharedPreferences = MainActivity.this.getSharedPreferences("WeatherPreference", Context.MODE_PRIVATE);
         String zipCode = sharedPreferences.getString("zipCode", "null");
@@ -100,7 +99,9 @@ public class MainActivity extends Activity implements WeatherTask.WeatherTaskLis
         }
         else {
             WeatherTask weatherTask = new WeatherTask(MainActivity.this, MainActivity.this);
-            weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/geolookup/q/"+zipCode+".json");
+            weatherTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/forecast/q/"+zipCode+".json");
+            ZipCodeLocationTask zipCodeLocationTask = new ZipCodeLocationTask(MainActivity.this, MainActivity.this);
+            zipCodeLocationTask.execute("http://api.wunderground.com/api/b00e06c861ae9642/geolookup/q/"+zipCode+".json");
         }
     }
 
@@ -128,4 +129,13 @@ public class MainActivity extends Activity implements WeatherTask.WeatherTaskLis
         Toast.makeText(MainActivity.this, "Fail to load weather data!", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void getLocationByZipCodeSuccess(String locationInfo) {
+        mLocationText.setText(locationInfo);
+    }
+
+    @Override
+    public void getLocationByZipCodeFail() {
+        Toast.makeText(MainActivity.this, "Can't get location by zip code!", Toast.LENGTH_SHORT).show();
+    }
 }

@@ -6,9 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.toe.toeweather.model.WeatherData;
-import com.toe.toeweather.model.WeatherItem;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -25,10 +23,12 @@ public class WeatherTask extends AsyncTask<String, String, WeatherData> {
     private static final String TAG = "ToeWeatherTask";
     private Context mContext;
     private WeatherTaskListener mWeatherTaskListener;
+    private WeatherData mWeatherData;
 
     public WeatherTask(Context context, WeatherTaskListener weatherTaskListener) {
         mContext = context;
         mWeatherTaskListener = weatherTaskListener;
+        mWeatherData = new WeatherData();
     }
 
     public interface WeatherTaskListener {
@@ -47,7 +47,6 @@ public class WeatherTask extends AsyncTask<String, String, WeatherData> {
         String zipCode = sharedPreferences.getString("zipCode", "null");
         String degreeType = sharedPreferences.getString("degreeType", "Fahrenheit");
 
-        WeatherData weatherData = new WeatherData();
         try {
             URL url = new URL(params[0]);
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
@@ -65,43 +64,25 @@ public class WeatherTask extends AsyncTask<String, String, WeatherData> {
             }
             totalInfo = weatherSB.toString();
             JSONObject jsonObject = new JSONObject(totalInfo);
-            JSONObject forecastObject = new JSONObject(jsonObject.getString("forecast"));
-            JSONObject simpleForecastObject = new JSONObject(forecastObject.getString("simpleforecast"));
-            JSONArray forecastDayArray = simpleForecastObject.getJSONArray("forecastday");
-            String headerText;
-            for(int i=0;i<displayDays;i++) {
-                JSONObject dayObject = forecastDayArray.getJSONObject(i);
-                String descriptionValue = dayObject.getString("conditions");
-                String iconUrl = dayObject.getString("icon_url");
-                JSONObject dateObject = dayObject.getJSONObject("date");
-                String weekday = dateObject.getString("weekday");
-                String monthname = dateObject.getString("monthname");
-                String day = dateObject.getString("day");
-                String year = dateObject.getString("year");
 
-                JSONObject highObject = dayObject.getJSONObject("high");
-                JSONObject lowObject = dayObject.getJSONObject("low");
-                String temperatureValue;
-                if(degreeType.equals("Fahrenheit") || degreeType.equals("华氏度"))
-                    temperatureValue = "(°F:"+lowObject.getString("fahrenheit")+"-"+highObject.getString("fahrenheit")+") ";
-                else
-                    temperatureValue = "(°C:"+lowObject.getString("celsius")+"-"+highObject.getString("celsius")+")";
-                if(i == 0)
-                    headerText = "Today's weather ("+monthname+" "+day+", "+year+")";
-                else
-                    headerText = weekday +" ("+monthname+" "+day+", "+year+")";
-                WeatherItem item = new WeatherItem();
-                item.setHeaderText(headerText);
-                item.setDescriptionValue(descriptionValue);
-                item.setTemperatureValue(temperatureValue);
-                item.setImgUrl(iconUrl);;
-                weatherData.getListWeatherItem().add(item);
-            }
+            ParseWeatherData parseWeatherData = new ParseWeatherData(jsonObject);
+            mWeatherData = parseWeatherData.parseData(displayDays, degreeType);
+
+
+//            if(params[1].equals("gpsSuccess")) {
+//                ParseWeatherData parseWeatherData = new ParseWeatherData(jsonObject);
+//                mWeatherData = parseWeatherData.parseDataWithGPSSuccess(displayDays, degreeType);
+//            }
+//            else if(params[1].equals("gpsFail")) {
+//                Log.d(TAG, "gpsFail");
+//                ParseWeatherData parseWeatherData = new ParseWeatherData(jsonObject);
+//                mWeatherData = parseWeatherData.parseDataWithGPSFail(displayDays, degreeType, zipCode);
+//            }
         }
         catch (Exception e) {
             Log.d(TAG, e.toString());
         }
-        return weatherData;
+        return mWeatherData;
     }
 
     @Override
@@ -115,13 +96,5 @@ public class WeatherTask extends AsyncTask<String, String, WeatherData> {
                 mWeatherTaskListener.getWeatherDataFail();
             }
         }
-//        WeatherLocation weatherLocation = new WeatherLocation(mContext);
-//        weatherLocation.getLocation();
-//        try {
-//            Thread.sleep(3000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        mMainActivity.pd.dismiss();
     }
 }
